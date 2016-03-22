@@ -22,7 +22,7 @@ num_lines = len (content)
 #num_lines = 1 #debugging
 
 #reading the corpus vector file
-model = models.Word2Vec.load_word2vec_format('/home/chandru/Desktop/RNN_trials/Wiki/trunk/wiki_vectors.bin', binary = True) #gensim 
+model = models.Word2Vec.load_word2vec_format('wiki_vectors.bin', binary = True) #gensim 
 
 #creating working arrays
 nullarray = np.zeros(64) 
@@ -71,7 +71,7 @@ num_lines = len (content)
 #num_lines = 1 #debugging
 
 #reading the corpus vector file
-model = models.Word2Vec.load_word2vec_format('/home/chandru/Desktop/RNN_trials/Wiki/trunk/wiki_vectors.bin', binary = True) #gensim 
+model = models.Word2Vec.load_word2vec_format('wiki_vectors.bin', binary = True) #gensim 
 
 #creating working arrays
 nullarray = np.zeros(64) 
