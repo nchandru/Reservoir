@@ -56,12 +56,18 @@ for j in range(0,train_len):
 		y.append(z)
 		yb.append(zb)
 
-	x.append(y)
-	xb.append(yb)
+	x.append(y) #x is the test vector
+	xb.append(yb) #xb is the target vector
+'''list created'''
 
+flow.train([x[0], [(np.array(x[0]),np.array(xb[0]))]]) # works but only for one sentence and don't know how to analyse
+'''UserWarning: Only one fold found, optimization is not supported. Instead no regularization or eq_noise_var is used!'''
 
-flow.train([x[0], [(np.array(x[0]),np.array(xb[0]))]])
-#flow.train([x[1], [(np.array(x[1]),np.array(xb[1]))]])
+#flow.train([x, [(np.array(x),np.array(xb))]]) # NodeException: x has rank 1, should be 2
+
+#flow.train([x, zip(np.array(x),np.array(xb))]) # AttributeError: 'list' object has no attribute 'ndim'
+
+#flow.train([x, [zip(np.array(x),np.array(xb))]]) # List of required argument keys: ['y']
 
 
 print 'end of program'
