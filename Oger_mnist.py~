@@ -36,13 +36,12 @@ if __name__ == "__main__":
 		for t in x:
 		        wt_rec[t][i]=random.uniform(-1,1)
 
-	trn_input=data['traindatamnist'] # a list of 100 elements, each element is one image of 28x28 pixels
+	trn_input=data['traindatamnist'] 
 	train_input = trn_input[:train_len]
 
-	trn_target=data['trainlabelsmnist'] # a list of 100 elements, each element is an array of 28x11 (11 classes)
+	trn_target=data['trainlabelsmnist'] 
 	train_target = trn_target[:train_len]
-	#train_label=Data_Train[2] # a list of 100 elements, each element is the digit
-
+	
 	tst_input=data['testdatamnist']
 	test_input = tst_input[:test_len]
 
