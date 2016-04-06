@@ -1,0 +1,91 @@
+import mdp.utils
+import numpy as np
+import cPickle
+import Oger
+import matplotlib.pylab as pl
+import matplotlib.pyplot as plt
+from PIL import Image
+import random
+from random import randrange
+import os
+
+
+train_len = 60000 # should be multiple of batch
+test_len = 9999
+
+batch = 100 
+
+resnode = 500
+numconn = 5
+
+if __name__ == "__main__":
+	print 'Loading data...'
+	data = cPickle.load(open('mnistall.p','r')) #dictionary file
+
+	wt_in = [[0 for x in range(28)] for x in range(resnode)]
+
+	for i in range(resnode):
+		x = random.sample(range(28),numconn)
+		for t in x:
+			wt_in[i][t]=random.uniform(-1,1)
+
+	wt_rec = [[0 for x in range(resnode)] for x in range(resnode)]
+
+	for i in range(resnode):
+		x = random.sample(range(resnode),numconn)
+		for t in x:
+		        wt_rec[t][i]=random.uniform(-1,1)
+
+	trn_input=data['traindatamnist'] # a list of 100 elements, each element is one image of 28x28 pixels
+	train_input = trn_input[:train_len]
+
+	trn_target=data['trainlabelsmnist'] # a list of 100 elements, each element is an array of 28x11 (11 classes)
+	train_target = trn_target[:train_len]
+	#train_label=Data_Train[2] # a list of 100 elements, each element is the digit
+
+	tst_input=data['testdatamnist']
+	test_input = tst_input[:test_len]
+
+	tst_target=data['testlabelsmnist']
+	test_target = tst_target[:test_len]
+
+	tst_label=data['testlabelsnumbermnist']
+	test_label = tst_label[:test_len]
+	
+	print(np.asarray(train_input).shape)
+	print(np.asarray(train_target).shape)
+	print(np.asarray(test_input).shape)
+	print(np.asarray(test_target).shape)
+	print(np.asarray(test_label).shape)
+
+
+	#reservoir = Oger.nodes.ReservoirNode(input_dim=28, output_dim=500) # each input is one column of the image i.e. 28 features
+	reservoir = Oger.nodes.LeakyReservoirNode(input_dim=28, output_dim=resnode, w = np.array(wt_rec), w_in= np.array(wt_in), leak_rate=0.22, input_scaling=0.28, spectral_radius = 0.65, dtype='f')
+	readout = Oger.nodes.RidgeRegressionNode(input_dim = resnode, output_dim=11, dtype='f') # there are 10 digits plus one class for the white space before and after each digit
+
+	print 'training begins'
+
+	srt = 0 #for managing indexing for every iteration
+	for ep in range(train_len/batch):
+		print '-------- Batch ' + str(ep) +' with range '+ str(srt) +'-' + str(srt+batch) + '------------------'
+		flow = mdp.CheckpointFlow([reservoir, readout], verbose=1)
+		readout.verbose = 1
+		flow.train([np.array(train_input[srt:srt+batch]), zip(np.array(train_input[srt:srt+batch]),np.array(train_target[srt:srt+batch]))], [None,mdp.CheckpointSaveFunction('readout.pic',stop_training = 0,protocol=2)])
+		srt = srt+batch
+		fl1 = file('readout.pic')
+		readout = cPickle.load(fl1)
+		fl1.close()
+		os.remove('readout.pic')
+		
+	
+	print 'training ends'
+
+	Error_rate=0
+	for ts_inp,ts_lb in zip(test_input,test_label):
+		Y=flow(ts_inp)
+		recognized=np.argmax(np.sum(Y[:,:-1],axis=0)) # Winner-Takes-All over digits only (class 11 which is the white space excluded from the calculation)
+		Error_rate+=(recognized!=ts_lb) # +1 if the recognitized digit differs from the label
+	print("Error rate is %.2f%%" % (Error_rate*100.0/len(test_input)))
+
+print 'end of program'
+
