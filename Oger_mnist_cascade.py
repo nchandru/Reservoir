@@ -1,3 +1,5 @@
+#Code for two cascading reservoirs
+
 import mdp.utils
 import numpy as np
 import cPickle
@@ -60,11 +62,10 @@ if __name__ == "__main__":
 	tst_label=data['testlabelsnumbermnist']
 	test_label = tst_label[:test_len]
 	
-	reservoir1 = Oger.nodes.LeakyReservoirNode(input_dim=28, output_dim=resnode, w = np.array(wt_rec), w_in= np.array(wt_in), leak_rate=0.22, input_scaling=0.28, spectral_radius = 0.65, dtype='f')
+	reservoir1 = Oger.nodes.LeakyReservoirNode(input_dim=28, output_dim=resnode, w = np.array(wt_rec), w_in= np.array(wt_in), leak_rate=0.22, input_scaling=0.28, spectral_radius = 0.65, dtype='f') # First reservoir
 	readout1 = Oger.nodes.RidgeRegressionNode(input_dim = resnode, output_dim=11, dtype='f') # there are 10 digits plus one class for the white space before and after each digit
-	reservoir2 = Oger.nodes.LeakyReservoirNode(input_dim=11, output_dim=resnode, w = np.array(wt_rec), w_in= np.array(wt_cas), leak_rate=0.22, input_scaling=0.28, spectral_radius = 0.65, dtype='f')
+	reservoir2 = Oger.nodes.LeakyReservoirNode(input_dim=11, output_dim=resnode, w = np.array(wt_rec), w_in= np.array(wt_cas), leak_rate=0.22, input_scaling=0.28, spectral_radius = 0.65, dtype='f') #Second reservoir
         readout2 = Oger.nodes.RidgeRegressionNode(input_dim = resnode, output_dim=11, dtype='f') # there are 10 digits plus one class for the white space before and after each digit
-
 
 	print 'training begins'
 
